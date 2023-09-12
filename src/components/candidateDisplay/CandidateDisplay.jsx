@@ -35,6 +35,7 @@ const CandidateDisplay = () => {
             ))
           ) : (
             <p></p>
+            
           )}
         </tbody>
       </table>

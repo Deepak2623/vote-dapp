@@ -14,14 +14,40 @@ const CandidateRegister = ({ account }) => {
     const gender = document.querySelector("#gender").value;
     const party = document.querySelector("#party").value;
     const age = document.querySelector("#age").value;
+    const partyDate = {
+      gender,
+      party,
+    };
     try {
-      await contract.methods
-        .candidateRegister(name, party, age, gender)
-        .send({ from: account, gas: 480000 });
-      toast.success("Registration successful");
+      const res = await fetch("http://localhost:3000/api/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(partyDate),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      if (data.message === "Registration sucessfully done") {
+        await contract.methods
+          .candidateRegister(name, party, age, gender)
+          .send({ from: account, gas: 480000 });
+        toast.success("Registration successful");
+      } else if (data.message === "Failed to register party") {
+        throw new Error("Failed to register party");
+      } else {
+        throw new Error("Failed to register candidate");
+      }
     } catch (error) {
-      toast.error("Registration Failed");
+      console.log(error);
     }
+
+    //   try {
+
+    //   } catch (error) {
+    //     toast.error("Registration Failed");
+    //   }
   };
   return (
     <>

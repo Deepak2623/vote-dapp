@@ -15,14 +15,32 @@ const VoterRegister = ({ account }) => {
     const name = document.querySelector("#name").value;
     const gender = document.querySelector("#gender").value;
     const age = document.querySelector("#age").value;
+    const partyDate = {
+      gender,
+    };
+
     try {
-      await contract.methods
-        .voterRegister(name, age, gender)
-        .send({ from: account, gas: 480000 });
-      toast.success("Voter Registration sucessfull");
+      const res = await fetch("http://localhost:3000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(partyDate),
+      });
+
+      const data = await res.json();
+      if (data.message === "Successfully registered") {
+        await contract.methods
+          .voterRegister(name, age, gender)
+          .send({ from: account, gas: 480000 });
+        toast.success("Voter Registration sucessfull");
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      toast.error("Voter Already Registered");
+      toast.error(error.message);
     }
+
   };
   return (
     <>
